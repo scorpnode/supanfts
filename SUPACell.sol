@@ -79,7 +79,7 @@ abstract contract ERC2981ContractWideRoyalties is ERC2981Base {
         royaltyAmount = (value * royalties.amount) / 10000;
     }
 }
-// File: SUPAVortex.sol
+
 pragma solidity ^0.8.2;
 
 // SPDX-License-Identifier: NONE
