@@ -317,7 +317,7 @@ contract SUPAOrganism is ERC721, ERC721URIStorage, ERC721Enumerable, Pausable, A
     if (organismType[tokenId]==0){
     organism = randomNum(tokenId,msg.sender);
     } else{
-    organism=organismType[tokenId];
+    organism=organismType[tokenId]-1;
     }
     if(organism==0){
     //SUPAVirus
