@@ -79,7 +79,7 @@ abstract contract ERC2981ContractWideRoyalties is ERC2981Base {
         royaltyAmount = (value * royalties.amount) / 10000;
     }
 }
-
+// File: SUPAVortex.sol
 pragma solidity ^0.8.2;
 interface mintOrganism { 
 function mint(  address receiver) external returns (bool success);
@@ -113,6 +113,7 @@ contract SUPAOrganism is ERC721, ERC721URIStorage, ERC721Enumerable, Pausable, A
     mapping(string => Counters.Counter) public seenNoncesDiscord; 
       mapping(uint => Counters.Counter) public seenNoncesOG;
        mapping(uint => bool) public seenNoncesTokenId;
+        mapping(uint => uint) public organismType;
     Counters.Counter private _tokenIdCounter;
     uint public preRelease;
     uint public publicRelease;
@@ -197,11 +198,29 @@ contract SUPAOrganism is ERC721, ERC721URIStorage, ERC721Enumerable, Pausable, A
         );
          supaToken.transferFrom(msg.sender, address(this), price);
            seenNoncesDiscord[discordUser].increment(); 
+           if(qty==4){
+              
           for (uint256 i = 0; i < qty; i++) {
          _tokenIdCounter.increment();
+         if(i<2){
+            organismType[_tokenIdCounter.current()]=1;
+         }else{
+            organismType[_tokenIdCounter.current()]=2;
+
+         }
         _safeMint(msg.sender, _tokenIdCounter.current());
         _setTokenURI(_tokenIdCounter.current(), string(abi.encodePacked(Strings.toString(_tokenIdCounter.current()), '.json')));
          emit mintSuccessful(_tokenIdCounter.current());
+           }
+           }else{
+          for (uint256 i = 0; i < qty; i++) {
+         _tokenIdCounter.increment();
+        _safeMint(msg.sender, _tokenIdCounter.current());
+         organismType[_tokenIdCounter.current()]=0;
+        _setTokenURI(_tokenIdCounter.current(), string(abi.encodePacked(Strings.toString(_tokenIdCounter.current()), '.json')));
+         emit mintSuccessful(_tokenIdCounter.current());
+           }
+       
          }
 
     }
@@ -218,11 +237,29 @@ contract SUPAOrganism is ERC721, ERC721URIStorage, ERC721Enumerable, Pausable, A
 
          supaToken.transferFrom(msg.sender, address(this), price);
           seenNoncesOG[OGTokenID].increment(); 
-         for (uint256 i = 0; i < qty; i++) {
+            if(qty==4){
+              
+          for (uint256 i = 0; i < qty; i++) {
          _tokenIdCounter.increment();
+         if(i<2){
+            organismType[_tokenIdCounter.current()]=1;
+         }else{
+            organismType[_tokenIdCounter.current()]=2;
+
+         }
         _safeMint(msg.sender, _tokenIdCounter.current());
         _setTokenURI(_tokenIdCounter.current(), string(abi.encodePacked(Strings.toString(_tokenIdCounter.current()), '.json')));
          emit mintSuccessful(_tokenIdCounter.current());
+           }
+           }else{
+          for (uint256 i = 0; i < qty; i++) {
+         _tokenIdCounter.increment();
+        _safeMint(msg.sender, _tokenIdCounter.current());
+         organismType[_tokenIdCounter.current()]=0;
+        _setTokenURI(_tokenIdCounter.current(), string(abi.encodePacked(Strings.toString(_tokenIdCounter.current()), '.json')));
+         emit mintSuccessful(_tokenIdCounter.current());
+           }
+       
          }
     }
      function mint(uint price, uint timestamp,uint qty,bytes memory sig) public payable  nonReentrant {
@@ -234,12 +271,30 @@ contract SUPAOrganism is ERC721, ERC721URIStorage, ERC721Enumerable, Pausable, A
             "Please make sure you have approved SUPA Token to purchase NFT"
         );
          supaToken.transferFrom(msg.sender, address(this), price);
-           for (uint256 i = 0; i < qty; i++) {
+        if(qty==4){
+              
+          for (uint256 i = 0; i < qty; i++) {
          _tokenIdCounter.increment();
+         if(i<2){
+            organismType[_tokenIdCounter.current()]=1;
+         }else{
+            organismType[_tokenIdCounter.current()]=2;
+
+         }
         _safeMint(msg.sender, _tokenIdCounter.current());
         _setTokenURI(_tokenIdCounter.current(), string(abi.encodePacked(Strings.toString(_tokenIdCounter.current()), '.json')));
          emit mintSuccessful(_tokenIdCounter.current());
            }
+           }else{
+          for (uint256 i = 0; i < qty; i++) {
+         _tokenIdCounter.increment();
+        _safeMint(msg.sender, _tokenIdCounter.current());
+         organismType[_tokenIdCounter.current()]=0;
+        _setTokenURI(_tokenIdCounter.current(), string(abi.encodePacked(Strings.toString(_tokenIdCounter.current()), '.json')));
+         emit mintSuccessful(_tokenIdCounter.current());
+           }
+       
+         }
     }
      function internalmint(uint qty) public  onlyRole(DEFAULT_ADMIN_ROLE) nonReentrant {
         require(_tokenIdCounter.current() + qty <= mintSize, "Mint limit reached");
@@ -258,7 +313,12 @@ contract SUPAOrganism is ERC721, ERC721URIStorage, ERC721Enumerable, Pausable, A
     require(super.ownerOf(tokenId)==msg.sender,"Not owner of NFT");
 
     bool success=false;
-    uint organism = randomNum(tokenId,msg.sender);
+    uint organism;
+    if (organismType[tokenId]==0){
+    organism = randomNum(tokenId,msg.sender);
+    } else{
+    organism=organismType[tokenId];
+    }
     if(organism==0){
     //SUPAVirus
     success =SUPAVirus.mint(msg.sender);
