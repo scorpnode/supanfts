@@ -190,7 +190,10 @@ contract SUPAOrganism is ERC721, ERC721URIStorage, ERC721Enumerable, Pausable, A
         require(_tokenIdCounter.current() + qty <= mintSize, "Mint limit reached");
          require(verifyDiscordUser(discordUser,price, timestamp,qty,sig),"Invalid signature provided");
         require(seenNoncesDiscord[discordUser].current()<2,"Limit of 2 mints per Genesis Crew Role");
-       
+        require(
+           block.timestamp > timestamp+600,
+            "Request expired"
+        );
         require(block.timestamp>preRelease,"Not released yet");
         require(
            supaToken.allowance(msg.sender,address(this)) >= price,
@@ -233,6 +236,10 @@ contract SUPAOrganism is ERC721, ERC721URIStorage, ERC721Enumerable, Pausable, A
            supaToken.allowance(msg.sender,address(this)) >= price,
             "Please make sure you have approved SUPA Token to purchase NFT"
         );
+        require(
+           block.timestamp > timestamp+600,
+            "Request expired"
+        );
          
 
          supaToken.transferFrom(msg.sender, address(this), price);
@@ -263,6 +270,10 @@ contract SUPAOrganism is ERC721, ERC721URIStorage, ERC721Enumerable, Pausable, A
          }
     }
      function mint(uint price, uint timestamp,uint qty,bytes memory sig) public payable  nonReentrant {
+          require(
+           block.timestamp > timestamp+600,
+            "Request expired"
+        );
           require(block.timestamp>publicRelease,"Not released yet");
            require(verifyMint(price, timestamp,qty,sig),"Invalid signature provided");
         require(_tokenIdCounter.current() + 1 <= mintSize, "Mint limit reached");
